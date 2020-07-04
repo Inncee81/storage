@@ -3,6 +3,7 @@
 Name: Anselmo D. Oduca 
 Course: BSIT - 2nd Year
 Subject: ITMC231 - Platform Technologies
+Mideterm Requirement
 
 Honor Code:
 
