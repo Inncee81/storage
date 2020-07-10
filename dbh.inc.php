@@ -14,6 +14,12 @@ This is my own work and I have not received any unauthorized help in completing 
 -->
 
 <?php
+
+	    function function_alert($msg) {
+	        echo "<script type='text/javascript'>alert('$msg');</script>";
+	    }
+		$msg = "";
+		$css_class = "";
 	    $host = "localhost";
         $dbusername = "katoari";
         $dbpassword = "anselmo21";

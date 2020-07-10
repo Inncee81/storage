@@ -15,6 +15,8 @@ This is my own work and I have not received any unauthorized help in completing 
 
 <?php
     include_once 'C:\wamp\www\Katoari Website\dbh.inc.php';
+    require_once "google.php";
+   
     error_reporting (E_ALL ^ E_NOTICE);
     session_start();
     ob_start();
@@ -38,7 +40,10 @@ This is my own work and I have not received any unauthorized help in completing 
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
         <link href="https://fonts.googleapis.com/css?family=Poppins" rel="stylesheet">
-
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>        
         <style type="text/css">
             *{
                 margin: 0 auto;
@@ -146,13 +151,14 @@ This is my own work and I have not received any unauthorized help in completing 
                 color: darkgrey;
             }
             .login-header .button{
-                font-size: 1.2rem;
+                padding: 6px;
+                font-size: 1rem;
                 background: #44ccd3;
                 border: none;
-                border-radius: 50px;
+                //border-radius: 50px;
                 outline: none;
                 color: white;
-                width: 50%;
+                width: 40%;
             
             }
             .login-header .button:hover{
@@ -261,7 +267,7 @@ This is my own work and I have not received any unauthorized help in completing 
                 background-color: #E1E5EE; 
                 margin: 5% auto 15% auto; 
                 border: 1px solid #888; 
-                width: 90%; 
+                width: 50%; 
             } 
             /*define the close button*/ 
               
@@ -319,6 +325,12 @@ This is my own work and I have not received any unauthorized help in completing 
                     top: 15vh;
                     width: 100%;
                 }
+            .modal-content { 
+                background-color: #E1E5EE; 
+                margin: 5% auto 15% auto; 
+                border: 1px solid #888; 
+                width: 100%; 
+            }                
             }
 
         </style>
@@ -342,8 +354,11 @@ This is my own work and I have not received any unauthorized help in completing 
                     <p><input type="email"  placeholder="Username" name="username" autocomplete="off"></p>
                     <p><input type="password"  placeholder="Password" name="password" autocomplete="off"></p>
 
-                    <p class="signup-text">Dont have account? <a onclick="document.getElementById('id01').style.display='block'">Sign Up now</a></p>
-                    <p><input type="submit" name="submit" class="button"></p>
+                    <p class="signup-text">Dont have account? <a onclick="document.getElementById('id01').style.display='block'" style="color: #44ccd3;">Sign Up now</a></p>
+                    <p><input type="submit" name="submit" class="button">
+                    <button type="button" class="btn btn-danger" onclick="window.location = '<?php echo $loginURL; ?>'">Login with Google</button>
+                    </p>
+                    
 
                 </form>
             <?php

@@ -18,11 +18,7 @@ This is my own work and I have not received any unauthorized help in completing 
     ini_set('display_errors', '1');
     error_reporting (E_ALL ^ E_NOTICE);
     session_start();
-    ob_start();
-        
-    function function_alert($msg) {
-        echo "<script type='text/javascript'>alert('$msg');</script>";
-    }
+    //ob_start();
     if(!isset($_SESSION['sess_user'])){
         header("Location: katoari.php");
     }    
@@ -123,6 +119,8 @@ This is my own work and I have not received any unauthorized help in completing 
                 </ul>
               </div>
             </nav>
+
+
                     <?php
                         
                         $id = $_SESSION['sess_user'];
@@ -132,8 +130,8 @@ This is my own work and I have not received any unauthorized help in completing 
                             $row = mysqli_fetch_assoc($result);
 
                         }
+                    ?>
 
-                    ?>            
                     <?php
                         $currentid = $_SESSION['sess_user'];
                         $newname = $_POST['name'];
@@ -142,9 +140,6 @@ This is my own work and I have not received any unauthorized help in completing 
                         $newpassword = $_POST['new_password'];
                         $confirm_password = $_POST['confirm_password'];
                         //function_alert($row['password']);
-
-
-
                         if (isset($_POST['update']))
                         {
                             if ($current_password==$row['password']) {
@@ -158,24 +153,56 @@ This is my own work and I have not received any unauthorized help in completing 
                                         die('Could not update data: ' . mysqli_error());
                                     }
                                     else{
-                                         function_alert("Data Successfully Updated");
-                                          header('Location: '.$_SERVER['PHP_SELF']);
-                                        
-                                    }                                    
+                                          $msg = "Successfully Save Changes";
+										  $css_class = "alert-success";	
+										  function_alert( $msg);	                                    	  
+										  echo "<script type='text/javascript'>window.top.location='katoarilogin.php';</script>";
+
+										 
+                                     }                                    
                                 }   
                                 else{
-                                    function_alert("Password should be match");
+                                    $msg = "Password should be match";
+                                    $css_class ="alert-danger";
                                 }
                             }
                             else{
-                                    function_alert("Your Current password is wrong");
-                            }
-                            
-                        }   
-                                
-
-                     
+                                    $msg = "Incorrect Current Password";
+                                    $css_class ="alert-danger";;
+                            }  
+                        }            
                 ?> 
+                              	<?php
+									if (isset($_POST['save'])) {
+											$target_path="uploads/";
+											$target_path=$target_path.basename($_FILES['file']['name']);
+										if (move_uploaded_file($_FILES['file']['tmp_name'], $target_path)) {
+												$msg = "File uploaded";
+												$css_class = "alert-success";
+												//function_alert("File Uploaded");
+												$sqlimg = "INSERT INTO upload(link) VALUES('$target_path')";
+												if ($conn->query($sqlimg) == TRUE) {
+													
+												}
+												else{
+													echo "Error:".$sqlimg.$conn->error;
+												}
+												$sqlimgsel = "SELECT link FROM upload order by id desc limit 1";
+												$resultimg=$conn->query($sqlimgsel);
+												if ($resultimg->num_rows>0) {
+													if ($rowimg=$resultimg->fetch_assoc()) {
+														//$path = $rowimg['picture_link'];
+													}
+													
+												}
+											}
+											else{
+												$msg = "Failed to upload";
+												$css_class ="alert-danger";
+											}
+										}
+							?>  
+
             <div class="container" style="padding: 20px;">
             <div class="row flex-lg-nowrap">
               <div class="col-12 col-lg-auto mb-3" style="width: 200px;">
@@ -189,11 +216,13 @@ This is my own work and I have not received any unauthorized help in completing 
                         <div class="e-profile">
                           <div class="row">
                             <div class="col-12 col-sm-auto mb-3">
-                              <div class="mx-auto" style="width: 150px;">
-                                <img src="defaultprofile.png" class="image-user">
+                          	
+                              <div class="mx-auto" style="width: 160px;">
+                                <img src="<?php echo $rowimg['link']; ?>" class="image-user">
                               </div>
+
                             </div>
-                            <div class="col d-flex flex-column flex-sm-row justify-content-between mb-3">
+                            <div class="col d-flex flex-column flex-sm-row justify-content-between mb-3" >
                               <div class="text-center text-sm-left mb-2 mb-sm-0">
                                 <h4 class="pt-sm-2 pb-1 mb-0 text-nowrap"><?php echo $row['name'];?></h4>
                                 <p class="mb-0"><?php echo $row['email'];?></p>
@@ -205,7 +234,7 @@ This is my own work and I have not received any unauthorized help in completing 
                                   </button>
                                 </div>
                               </div>
-                              <div class="text-center text-sm-right">
+                              <div class="text-center text-sm-right" style="width: 170px;">
                                 <span class="badge badge-dark">
                              <?php
                                 $name = $row['name'];
@@ -218,10 +247,18 @@ This is my own work and I have not received any unauthorized help in completing 
                             ?>
 
                                 </span>
-                                <div class="text-muted"><small>Joined 09 Dec 2017</small></div>
+          
                               </div>
                             </div>
                           </div>
+                             <?php  
+                              		if (!empty($msg)): 
+                              ?>
+                          		<div class="alert <?php echo $css_class;?>" style="text-align: center;">
+                          		<?php echo $msg;?></div>
+                          	<?php 
+                          			endif; 
+                          	?>
                           <ul class="nav nav-tabs">
                             <li class="nav-item"><a href="" class="active nav-link">Settings</a></li>
                           </ul>
@@ -399,6 +436,7 @@ This is my own work and I have not received any unauthorized help in completing 
 			      <div class="modal-body">
 			      	<form action="#" method="POST" enctype="multipart/form-data">
 				        <div class="row justify-content-center">
+				        		<input type="hidden" name="MAX_FILE_SIZE" value="1000000">
 								<input type="file" name="file" style="width: 75%;" />
 						</div>
 					
@@ -414,7 +452,7 @@ This is my own work and I have not received any unauthorized help in completing 
 			</div>
 			<?php
 
-				if (isset($_POST['save'])) {
+				/*if (isset($_POST['save'])) {
 					$file = $_FILES['file'];
 
 					$fileName = $file['name'];
@@ -450,13 +488,13 @@ This is my own work and I have not received any unauthorized help in completing 
 						function_alert("You cannot upload files of this type!");
 					}
 				}
-
+				*/
 
 			?>
 			<?php
 				/*$id = $row['user_ID'];
 				$sqlimg = "SELECT * FROM profileimg WHERE userid='$id'";
-				$resultimg = mysqli_query($conn, $sqlImg);
+				$resultimg = mysqli_query($conn, $sqlimg);
 
 				$rowImg = mysqli_fetch_assoc($resultimg);
 
@@ -464,9 +502,12 @@ This is my own work and I have not received any unauthorized help in completing 
 					echo "uploads/profile" .$id. ".jpg";
 				} else{
 					echo "uploads/profiledefault.jpg";
-				}*/
+				}
 
-
+				$sqlIns = "INSERT INTO profileimg(userid, status) VALUES ('$userid', 1)";
+				mysqli_query($conn, $sqlIns);
+				 //header('Location: '.$_SERVER['PHP_SELF']);
+				*/
 			?>
 
             <script type="text/javascript">
@@ -477,6 +518,6 @@ This is my own work and I have not received any unauthorized help in completing 
 </html>
 
 <?php
-
+	//ob_end_flush();
     }
 ?>

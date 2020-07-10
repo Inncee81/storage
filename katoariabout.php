@@ -20,9 +20,6 @@ This is my own work and I have not received any unauthorized help in completing 
     session_start();
     ob_start();
         
-    function function_alert($msg) {
-        echo "<script type='text/javascript'>alert('$msg');</script>";
-    }
     if(!isset($_SESSION['sess_user'])){
         header("Location: katoari.php");
     }    

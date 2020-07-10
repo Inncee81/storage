@@ -13,16 +13,15 @@ This is my own work and I have not received any unauthorized help in completing 
 
 -->
 
-<?php  
+<?php
+    require_once "katoariconfig.php";  
     include_once 'C:\wamp\www\Katoari Website\dbh.inc.php';
+
     ini_set('display_errors', '1');
     error_reporting (E_ALL ^ E_NOTICE);
     session_start();
     ob_start();
         
-    function function_alert($msg) {
-        echo "<script type='text/javascript'>alert('$msg');</script>";
-    }
     if(!isset($_SESSION['sess_user'])){
         header("Location: katoari.php");
     }    
