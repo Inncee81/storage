@@ -21,7 +21,7 @@ This is my own work and I have not received any unauthorized help in completing 
     error_reporting (E_ALL ^ E_NOTICE);
     session_start();
     ob_start();
-        
+    
     if(!isset($_SESSION['sess_user'])){
         header("Location: katoari.php");
     }    
@@ -328,6 +328,7 @@ This is my own work and I have not received any unauthorized help in completing 
         
     </head>
     <body>
+
             <!-- Navigation Bar -->
             <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
               <a class="navbar-brand" href="katoarihome.php">KATOARI</a>
@@ -356,7 +357,7 @@ This is my own work and I have not received any unauthorized help in completing 
         <div class="col-12 col-lg-4 col-xl-3 order-2 order-lg-1">
             <div class="card mb-3">
                 <div class="card-body text-center">
-                    <img src="defaultprofile.png" alt="<?php echo $row['name']?>" class="img-fluid rounded-circle mb-2" width="128" height="128">
+                    <img src="<?php echo $row['link'];?>" alt="Katoari Picture" class="img-fluid rounded-circle mb-2" width="128" height="128">
                     <h4 class="card-title mb-0"><?php echo $row['name']; ?></h4>
                     <div class="text-muted mb-2">
                         <?php
@@ -390,7 +391,7 @@ This is my own work and I have not received any unauthorized help in completing 
                 <div class="card-body h-100">
 
                     <div class="media">
-                        <img src="defaultprofile.png" width="56" height="56" class="rounded-circle mr-3" alt="">
+                        <img src="<?php echo $row['link'];?>" width="56" height="56" class="rounded-circle mr-3" alt="">
                         <div class="media-body">
                             <small class="float-right text-navy">5m ago</small>
                             <p class="mb-2"><strong><?php echo $row['name']?></strong></p>
@@ -495,7 +496,7 @@ This is my own work and I have not received any unauthorized help in completing 
 
                     <hr>
                     <div class="media">
-                        <img src="defaultprofile.png" width="56" height="56" class="rounded-circle mr-3" alt="">
+                        <img src="<?php echo $row['link'];?>" width="56" height="56" class="rounded-circle mr-3" alt="">
                         <div class="media-body">
                             <small class="float-right text-navy">4h ago</small>
                             <p class="mb-2"><strong><?php echo $row['name'];?></strong></p>
@@ -515,10 +516,11 @@ This is my own work and I have not received any unauthorized help in completing 
         </div>
 
         <div class="col-12 col-lg-12 col-xl-3 order-3 order-lg-3">
-            <div class="card">
+            <div class="card" style="width: 350px;">
                 <div class="card-header">
                     <div class="card-actions float-right">
-                        <div class="dropdown show">
+                        <div class="dropdown show" style="text-align: center;">
+
                             <a href="#" data-toggle="dropdown" data-display="static">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-horizontal align-middle">
                                     <circle cx="12" cy="12" r="1"></circle>
@@ -530,96 +532,152 @@ This is my own work and I have not received any unauthorized help in completing 
                             <div class="dropdown-menu dropdown-menu-right">
                                 <a class="dropdown-item" href="#">Action</a>
                                 <a class="dropdown-item" href="#">Another action</a>
-                                <a class="dropdown-item" href="#">Something else here</a>
                             </div>
+
                         </div>
+                        <h5 class="card-title mb-0">Trending News</h5>
                     </div>
-                    <h5 class="card-title mb-0">Activities</h5>
+                    
                 </div>
-                <div class="card-body h-100">
+                <?php
+                    $url = 'http://newsapi.org/v2/top-headlines?country=ph&apiKey=70fe95d0ce884c7996ad5fb596466ed6';
+                    $response = file_get_contents($url);
+                    $newsdata = json_decode($response);
+                    $button = "Load More";
+                    $name = "Load";
+                  
 
-                    <div class="media">
-                        <img src="defaultprofile.png" width="36" height="36" class="rounded-circle mr-2" alt="">
-                        <div class="media-body">
-                            <small class="float-right text-navy">5m ago</small>
-                            <strong><?php echo $row['name'];?></strong> started joining Katoari
+
+                ?>
+
+                <div class="card-body h-500">
+                <?php
+
+                        function limitednews(): void {
+                        global $newsdata;
+                        global $count;
+                        foreach ($newsdata->articles as $news) {
+                        if ($news->source->name == "Inquirer.net") {
+                        
+
+                ?>
+                    <div class="media"style="text-align: justify;" >
+                        <?php
+                            if (!empty($news->urlToImage)) {
+                               
+                            
+
+                        ?>
+                        <img src="<?php echo $news->urlToImage;?>" width="70" height="50" class="rounded mx-auto d-block" >
+                        
+                        <?php
+                            }
+                            else{
+
+
+                        ?>
+                        <img src="imagenotavailable.png" width="70" height="50" class="rounded mx-auto d-block">                            
+                        <?php
+                            }
+                        ?>
+                            <div class="media-body" style="margin-left: 20px;">
+                            <strong><a href="<?php echo $news->url;?>" style="color: #1D0000;"><?php echo $news->title;?></a></strong> 
                             <br>
-                            <small class="text-muted">Today 7:51 pm</small>
+                            <small class="text-muted"><?php echo $news->publishedAt;?></small>
                             <br>
                         </div>
                     </div>
-
                     <hr>
-                    <div class="media">
-                        <img src="https://scontent.fmnl17-1.fna.fbcdn.net/v/t1.0-9/s960x960/73197522_4048848071823496_147597569982715570_o.jpg?_nc_cat=106&_nc_sid=85a577&_nc_eui2=AeEFxyr4R19O1GB_XS1Ct8JeY3kmtposX4VjeSa2mixfhesPi5QygbigGdZQFdPw9Yd8nLMA-deSGc4B2bP2Pva3&_nc_ohc=Ef3rl0h2f2sAX-I9fZP&_nc_ht=scontent.fmnl17-1.fna&_nc_tp=7&oh=eaee863fa8f3f6fa4512af7602a9eed4&oe=5F238F73" width="36" height="36" class="rounded-circle mr-2" alt="Katoari Metudomika">
-                        <div class="media-body">
-                            <small class="float-right text-navy">30m ago</small>
-                            <strong>Katoari Metudomika</strong> posted something on <strong>Marie Salter</strong>'s timeline
-                            <br>
-                            <small class="text-muted">Today 7:21 pm</small>
 
-                            <div class="border text-sm text-muted p-2 mt-1">
-                                
-                            </div>
+                <?php
+                     
+                    }
+                    }
+                    }
+                    
+                        
+                        limitednews();
+                    
+
+                    
+
+                ?>
+           
+
+                <?php
+
+                    if (isset($_POST['Load'])) {
+                    
+                    
+
+                ?>
+                <!-- LOAD MOREE -->
+                <?php
+                        $x = 3;
+                      foreach ($newsdata->articles as $news) {
+                            if ($x==10) {
+                                $button="View Less";
+                                $name = "view";
+                                if ($button == "View Less") {
+                                    //limitednews();
+                                    break;
+                                }
+
+                            }
+                            else{
+                           
+
+                ?>
+                    <div class="media"style="text-align: justify;" >
+                        <?php
+                            if (!empty($news->urlToImage)) {
+
+                               
+                            
+
+                        ?>
+                        <img src="<?php echo $news->urlToImage;?>" width="70" height="50" class="rounded mx-auto d-block" >
+                        
+                        <?php
+                                                            }
+                            else{
+
+
+                        ?>
+                        <img src="imagenotavailable.png" width="70" height="50" class="rounded mx-auto d-block">                            
+                        <?php
+                                }
+                        ?>
+                            <div class="media-body" style="margin-left: 20px;">
+                            <strong><a href="<?php echo $news->url;?>" style="color: #1D0000;"><?php echo $news->title;?></a></strong> 
+                            <br>
+                            <small class="text-muted"><?php echo $news->publishedAt;?></small>
+                            <br>
                         </div>
                     </div>
-
                     <hr>
-                    <div class="media">
-                        <img src="https://bootdey.com/img/Content/avatar/avatar3.png" width="36" height="36" class="rounded-circle mr-2" alt="Marie Salter">
-                        <div class="media-body">
-                            <small class="float-right text-navy">1h ago</small>
-                            <strong>Marie Salter</strong> posted a new blog
-                            <br>
+                <?php
+                               $x++;
+                                                        }
 
-                            <small class="text-muted">Today 6:35 pm</small>
-                        </div>
-                    </div>
+                ?>
 
-                    <hr>
-                    <div class="media">
-                        <img src="https://cdn.fastly.picmonkey.com/contentful/h6goo9gw1hh6/2sNZtFAWOdP1lmQ33VwRN3/24e953b920a9cd0ff2e1d587742a2472/1-intro-photo-final.jpg?w=800&q=70" width="36" height="36" class="rounded-circle mr-2" alt="John Smith">
-                        <div class="media-body">
-                            <small class="float-right text-navy">3h ago</small>
-                            <strong>John Smith</strong> posted two photos on <strong>Marie Salter</strong>'s timeline
-                            <br>
-                            <small class="text-muted">Today 5:12 pm</small>
 
-                            <div class="row no-gutters mt-1">
-                                <div class="col-6 col-md-4 col-lg-4 col-xl-3">
-                                    <img src="https://www.mysteryblock.com/wp-content/uploads/2017/12/2000-gaming-PC-build-featured-image-1024x768.jpg" class="img-fluid pr-2" alt="Unsplash">
-                                </div>
-                                <div class="col-6 col-md-4 col-lg-4 col-xl-3">
-                                    <img src="https://www.extremetech.com/wp-content/uploads/2018/03/Inno3D-Feature.jpg" class="img-fluid pr-2" alt="Unsplash">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <?php
 
-                    <hr>
-                    <div class="media">
-                        <img src="https://bootdey.com/img/Content/avatar/avatar3.png" width="36" height="36" class="rounded-circle mr-2" alt="Marie Salter">
-                        <div class="media-body">
-                            <small class="float-right text-navy">1d ago</small>
-                            <strong>Marie Salter</strong> posted a new blog
-                            <br>
-                            <small class="text-muted">Yesterday 2:43 pm</small>
-                        </div>
-                    </div>
 
-                    <hr>
-                    <div class="media">
-                        <img src="https://scontent.fmnl17-1.fna.fbcdn.net/v/t1.0-9/s960x960/73197522_4048848071823496_147597569982715570_o.jpg?_nc_cat=106&_nc_sid=85a577&_nc_eui2=AeEFxyr4R19O1GB_XS1Ct8JeY3kmtposX4VjeSa2mixfhesPi5QygbigGdZQFdPw9Yd8nLMA-deSGc4B2bP2Pva3&_nc_ohc=Ef3rl0h2f2sAX-I9fZP&_nc_ht=scontent.fmnl17-1.fna&_nc_tp=7&oh=eaee863fa8f3f6fa4512af7602a9eed4&oe=5F238F73" width="36" height="36" class="rounded-circle mr-2" alt="Katoari Metudomika">
-                        <div class="media-body">
-                            <small class="float-right text-navy">1d ago</small>
-                            <strong>Katoari Metudomika</strong> started joining Katoari
-                            <br>
-                            <small class="text-muted">Yesterdag 1:51 pm</small>
-                        </div>
-                    </div>
+                          
+                        }
 
-                    <hr>
-                    <a href="#" class="btn btn-primary btn-sm btn-block">Load more</a>
+                    } else if(isset($_POST['view'])){
+  
+                    }
+                ?>
+                <form action="#" method="POST">
+                    <button class="btn btn-primary btn-sm btn-block" name="<?php echo $name;?>"><?php echo $button; ?></button>
+                </form>     
+
+
                 </div>
             </div>
         </div>

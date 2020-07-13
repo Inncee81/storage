@@ -45,22 +45,43 @@
 			}
 			return $code;
 		}
-
-		$name = $_SESSION['firstname']. " " . $_SESSION['lastname'];
+		// Read existing google account
 		$email = $_SESSION['email'];
-		$password = generateChar(5);
-		$sql = "INSERT INTO register(name, email, password) VALUES ('$name', '$email', '$password')";
-
-		if (mysqli_query($conn, $sql)) {
-			function_alert("Google Account Inserted to database");
-			$_SESSION['sess_user']=mysqli_insert_id($conn);
-			header('Location: katoarihome.php');
-			exit();
+		$query = "SELECT * FROM register where email='$email';";
+		function_alert($email);
+		$result = mysqli_query($conn, $query);
+		if (mysqli_num_rows($result) > 0 ) {
+			$row = mysqli_fetch_assoc($result);
+		}		
+		if ($email == $row['email']) {
+				$_SESSION['sess_user'] = $row['user_ID'];
+				$_SESSION['google'] = "google";
+				header('Location: katoarihome.php');
+				exit();
 		}
 		else{
-			echo "Error: " . $sql . "<br>" . mysqli_error($conn);
+			$_SESSION['user_image'] = $data['picture'];
+			$name = $_SESSION['firstname']. " " . $_SESSION['lastname'];
+			$email = $_SESSION['email'];
+			$password = generateChar(5);
+			$sql = "INSERT INTO register(name, email, password, link) VALUES ('$name', '$email', '$password', '$_SESSION[user_image]')";
+			$cond = mysqli_query($conn, $sql);
+			$_SESSION['sess_user']=mysqli_insert_id($conn);
+
+			if ($cond) {
+				function_alert("Google Account Inserted to database");
+				$_SESSION['google'] = "google";
+				header('Location: katoarihome.php');
+				exit();
+			}
+			else{
+				echo "Error: " . $sql . "<br>" . mysqli_error($conn);
+			}
+
+
+
 		}
-		
+
 	}
 
 	/*if (!isset($_SESSION['access_token'])) {

@@ -14,7 +14,7 @@ This is my own work and I have not received any unauthorized help in completing 
 -->
 
 <?php
-
+		//session_start();
 	    function function_alert($msg) {
 	        echo "<script type='text/javascript'>alert('$msg');</script>";
 	    }

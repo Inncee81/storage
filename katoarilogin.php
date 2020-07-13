@@ -18,7 +18,8 @@ This is my own work and I have not received any unauthorized help in completing 
     ini_set('display_errors', '1');
     error_reporting (E_ALL ^ E_NOTICE);
     session_start();
-    //ob_start();
+    ob_start();
+   
     if(!isset($_SESSION['sess_user'])){
         header("Location: katoari.php");
     }    
@@ -142,59 +143,89 @@ This is my own work and I have not received any unauthorized help in completing 
                         //function_alert($row['password']);
                         if (isset($_POST['update']))
                         {
-                            if ($current_password==$row['password']) {
-                                if ($newpassword == $confirm_password) {
+                        	if(!isset($_SESSION['google']))
+                        	{
+	                            if ($current_password==$row['password']) 
+	                            {
+	                                if ($newpassword == $confirm_password) {
 
-                                    $sql = "UPDATE register SET name='$newname', email='$newemail', password='$newpassword' WHERE user_ID='$currentid'";
+	                                    $sql = "UPDATE register SET name='$newname', email='$newemail', password='$newpassword' WHERE user_ID='$currentid'";
 
-                                    $retval = mysqli_query($conn, $sql);
+	                                    $retval = mysqli_query($conn, $sql);
 
-                                    if (! $retval) {
-                                        die('Could not update data: ' . mysqli_error());
-                                    }
-                                    else{
-                                          $msg = "Successfully Save Changes";
-										  $css_class = "alert-success";	
-										  function_alert( $msg);	                                    	  
-										  echo "<script type='text/javascript'>window.top.location='katoarilogin.php';</script>";
+	                                    if (! $retval) {
+	                                        die('Could not update data: ' . mysqli_error());
+	                                    }
+	                                    else{
+	                                          $msg = "Successfully Save Changes";
+											  $css_class = "alert-success";	
+											  function_alert( $msg);	                                    	  
+											  echo "<script type='text/javascript'>window.top.location='katoarilogin.php';</script>";
 
-										 
-                                     }                                    
-                                }   
-                                else{
-                                    $msg = "Password should be match";
-                                    $css_class ="alert-danger";
-                                }
-                            }
-                            else{
-                                    $msg = "Incorrect Current Password";
-                                    $css_class ="alert-danger";;
-                            }  
+											 
+	                                     }                                    
+	                                }   
+	                                else{
+	                                    $msg = "Password should be match";
+	                                    $css_class ="alert-danger";
+	                                }
+	                            }
+	                            else{
+	                                    $msg = "Incorrect Current Password";
+	                                    $css_class ="alert-danger";;
+	                            }
+	                        }
+	                        else{
+
+	                                $sql = "UPDATE register SET name='$newname', email='$newemail', password='$newpassword' WHERE user_ID='$currentid'";
+
+	                                $retval = mysqli_query($conn, $sql);
+
+	                                if (! $retval) {
+	                                        die('Could not update data: ' . mysqli_error());
+	                                }
+	                                else{
+	                                     $msg = "Successfully Save Changes";
+										 $css_class = "alert-success";	
+										 function_alert($msg);	            
+
+										echo "<script type='text/javascript'>window.top.location='katoarilogin.php';</script>";
+
+											 
+	                                     } 
+
+	                        }      
                         }            
                 ?> 
                               	<?php
+
 									if (isset($_POST['save'])) {
+											$id = $_SESSION['sess_user'];
 											$target_path="uploads/";
 											$target_path=$target_path.basename($_FILES['file']['name']);
 										if (move_uploaded_file($_FILES['file']['tmp_name'], $target_path)) {
-												$msg = "File uploaded";
-												$css_class = "alert-success";
-												//function_alert("File Uploaded");
-												$sqlimg = "INSERT INTO upload(link) VALUES('$target_path')";
-												if ($conn->query($sqlimg) == TRUE) {
-													
+
+												
+												$updatelink = $target_path;
+												$id = $_SESSION['sess_user'];
+												function_alert($updatelink);
+												$sqlimg = "UPDATE register SET link='$updatelink' WHERE user_ID='$id'";
+												
+												if (mysqli_query($conn, $sqlimg)) {
+													$msg = "File uploaded";
+													$css_class = "alert-success";
+													function_alert($msg);
+
+													header('Location: katoarilogin.php');
+
+													exit();
+												} else{
+													$msg = "There was an error uploading your file please try different image";
+													function_alert($msg);
+													$css_class = "alert-danger";
 												}
-												else{
-													echo "Error:".$sqlimg.$conn->error;
-												}
-												$sqlimgsel = "SELECT link FROM upload order by id desc limit 1";
-												$resultimg=$conn->query($sqlimgsel);
-												if ($resultimg->num_rows>0) {
-													if ($rowimg=$resultimg->fetch_assoc()) {
-														//$path = $rowimg['picture_link'];
-													}
-													
-												}
+
+
 											}
 											else{
 												$msg = "Failed to upload";
@@ -218,7 +249,7 @@ This is my own work and I have not received any unauthorized help in completing 
                             <div class="col-12 col-sm-auto mb-3">
                           	
                               <div class="mx-auto" style="width: 160px;">
-                                <img src="<?php echo $rowimg['link']; ?>" class="image-user">
+                                <img src="<?php echo $row['link']; ?>" class="image-user">
                               </div>
 
                             </div>
@@ -239,7 +270,7 @@ This is my own work and I have not received any unauthorized help in completing 
                              <?php
                                 $name = $row['name'];
 
-                                if ($name == "Anselmo Od" || $name == "Anselm Oduca") {
+                                if ($name == "Anselmo Od" || $name == "Anselmo Oduca") {
                                       echo "Admin";
                                 }else{
                                     echo "User";
@@ -291,6 +322,12 @@ This is my own work and I have not received any unauthorized help in completing 
                                 </div>
                                 <div class="row">
                                   <div class="col-12 col-sm-6 mb-3">
+                                  	<?php
+                                  		if (!isset($_SESSION['google'])) {
+                                  			
+                                  		
+
+                                  	 ?>
                                     <div class="mb-2"><b>Change Password</b></div>
                                     <div class="row">
                                       <div class="col">
@@ -300,6 +337,7 @@ This is my own work and I have not received any unauthorized help in completing 
                                         </div>
                                       </div>
                                     </div>
+
                                     <div class="row">
                                       <div class="col">
                                         <div class="form-group">
@@ -312,10 +350,47 @@ This is my own work and I have not received any unauthorized help in completing 
                                       <div class="col">
                                         <div class="form-group">
                                           <label>Confirm <span class="d-none d-xl-inline">Password</span></label>
-                                          <input class="form-control" type="password" name="confirm_password"  placeholder="••••••" required></div>
+                                          <input class="form-control" type="password" name="confirm_password"  placeholder="••••••" required>
+
+
+                                      	</div>
+                                     <?php 
+
+                                          	}
+                                          	else{
+                                     ?>
+                                    <div class="mb-2"></div>
+                                    <div class="row">
+                                      <div class="col">
+                                        <div class="form-group" style="text-align: justify;">
+                                        	<b>Note:</b> <small>
+                                        		<br>&nbsp;&nbsp;Since you use google account to sign in you don't need to update your password.</small>
+                                        </div>
                                       </div>
                                     </div>
+
+                                    <div class="row">
+                                      <div class="col">
+                                        <div class="form-group">
+   
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div class="row">
+                                      <div class="col">
+                                        <div class="form-group">
+
+
+
+                                      	</div>
+                                      	<?php
+                                      		}
+                                      	 ?>
+                                      </div>
+
+                                    </div>
                                   </div>
+
                                   <div class="col-12 col-sm-5 offset-sm-1 mb-3">
                                     <div class="mb-2"><b>Keeping in Touch</b></div>
                                     <div class="row">

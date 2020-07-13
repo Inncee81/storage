@@ -16,7 +16,12 @@ This is my own work and I have not received any unauthorized help in completing 
 <?php
     include_once 'C:\wamp\www\Katoari Website\dbh.inc.php';
     require_once "google.php";
+    require_once "katoarifbconfig.php";
+    $redirecTo = "http://".$_SERVER['SERVER_NAME']."/Katoari%20Website/katoarifbcallback.php";
+    $data = ['email'];
+    $fullurl = $handler->getLoginUrl($redirecTo, $data);
    
+    //function_alert($fullurl);
     error_reporting (E_ALL ^ E_NOTICE);
     session_start();
     ob_start();
@@ -86,6 +91,7 @@ This is my own work and I have not received any unauthorized help in completing 
                 color: rgb(226,226,226);
                 font-size: 72px;
                 padding: 25px;
+                text-align: justify;
             }
             .header{
                 height: 100vh;
@@ -151,14 +157,15 @@ This is my own work and I have not received any unauthorized help in completing 
                 color: darkgrey;
             }
             .login-header .button{
-                padding: 6px;
+                padding: 12px;
                 font-size: 1rem;
                 background: #44ccd3;
                 border: none;
-                //border-radius: 50px;
+                border-radius: 35px;
                 outline: none;
                 color: white;
-                width: 40%;
+                margin: 0px;
+                width: 50%;
             
             }
             .login-header .button:hover{
@@ -211,9 +218,10 @@ This is my own work and I have not received any unauthorized help in completing 
                 //width: 50; 
                 border:none;
                 border-radius: 5px;
+
             }
             button:hover { 
-                background-color: #C0C0C0;
+                transform: scale(1.1);
 
             }              
             /*set styles for the cancel button*/ 
@@ -298,8 +306,51 @@ This is my own work and I have not received any unauthorized help in completing 
                 .signupbtn { 
                     width: 100%; 
                 } 
-            }          
-            @media screen and (max-width: 768px){
+            }
+            @media screen and (max-width: 600px;) { 
+                body{
+                    overflow-x: hidden;
+                    font-size: 8px;
+                }
+
+                .design{
+                    z-index: 1;
+                    position: absolute;
+                    left: 60px;
+                    top: 100px;
+                    width: 50%;
+                    
+                }
+                .text-endorse{
+                    text-align: justify;
+                    font-size: 28px;
+                    padding: 25px;
+                }
+
+                .login-header {
+                    position: relative;
+                    left: 30px;
+                    top: 15vh;
+                    width: 100%;
+                }
+                .modal-content { 
+                    background-color: #E1E5EE; 
+                    margin: 5% auto 15% auto; 
+                    border: 1px solid #888; 
+                    width: 90%; 
+                }
+                .header{
+                    height: 100vh;
+                    width: 110%;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    user-select: none;
+                    color: rgb(226,226,226);
+
+                }
+            }           
+            @media screen and (max-width: 700px){
                 body{
                     overflow-x: hidden;
                     font-size: 8px;
@@ -315,22 +366,34 @@ This is my own work and I have not received any unauthorized help in completing 
 
                 }
                 .text-endorse{
-                    text-align: left;
+                    text-align: justify;
                     font-size: 28px;
                     padding: 25px;
                 }
+
                 .login-header {
                     position: relative;
-                    left: 60px;
+                    left: 30px;
                     top: 15vh;
                     width: 100%;
                 }
-            .modal-content { 
-                background-color: #E1E5EE; 
-                margin: 5% auto 15% auto; 
-                border: 1px solid #888; 
-                width: 100%; 
-            }                
+                .modal-content { 
+                    background-color: #E1E5EE; 
+                    margin: 5% auto 15% auto; 
+                    border: 1px solid #888; 
+                    width: 90%; 
+                }
+                .header{
+                    height: 102.5vh;
+                    width: 110%;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    user-select: none;
+                    color: rgb(226,226,226);
+
+                }
+
             }
 
         </style>
@@ -354,13 +417,21 @@ This is my own work and I have not received any unauthorized help in completing 
                     <p><input type="email"  placeholder="Username" name="username" autocomplete="off"></p>
                     <p><input type="password"  placeholder="Password" name="password" autocomplete="off"></p>
 
-                    <p class="signup-text">Dont have account? <a onclick="document.getElementById('id01').style.display='block'" style="color: #44ccd3;">Sign Up now</a></p>
-                    <p><input type="submit" name="submit" class="button">
-                    <button type="button" class="btn btn-danger" onclick="window.location = '<?php echo $loginURL; ?>'">Login with Google</button>
-                    </p>
                     
+                    <p>
+                        <input type="submit" name="submit" class="button">
 
+                    </p>
+                    <div style="font-weight: bold;">
+                        OR
+                    </div>
+                    <div>
+                         <button type="button" class="btn btn-primary" onclick="window.location = '<?php echo $fullurl; ?>'">Login with Facebook</button>
+                        <button type="button" class="btn btn-danger" onclick="window.location = '<?php echo $loginURL; ?>'">Login with Google</button>
+                    </div>
+                    <p class="signup-text">Dont have account? <a onclick="document.getElementById('id01').style.display='block'" style="color: #44ccd3;">Sign Up now</a></p>
                 </form>
+            </div>
             <?php
                     /*$con = new mysqli('localhost', 'katoari', 'anselmo21')
                      or die(mysqli_error());
@@ -468,7 +539,8 @@ This is my own work and I have not received any unauthorized help in completing 
                         }
                         else{
                             $email = $_POST['email-sign'];
-                            $sql = "INSERT INTO register(name, email, password) values ('$name', '$email', '$password')";
+                            $defaulturl = "defaultprofile.png";
+                            $sql = "INSERT INTO register(name, email, password, link) values ('$name', '$email', '$password', '$defaulturl')";
                             if ($conn->query($sql) == TRUE) {
                                 echo "New record is inserted successfully";
                                 
